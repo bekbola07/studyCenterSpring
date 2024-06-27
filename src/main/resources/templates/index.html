@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Study Center</title>
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <style>
+        .center-text {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <a href="/auth/logout" class="btn btn-primary">Log out</a>
+<div class="row">
+    <div class="col-3 d-flex justify-content-center align-items-start" th:each="group: ${groups}">
+        <div>
+            <a class="btn btn-primary btn-lg px-5 my-4" th:if="${chosenGroup == null or chosenGroup.id != group.id}" th:href="@{'/?groupId=' + ${group.id}}" th:text="${group.name}"></a>
+            <a class="btn btn-success btn-lg px-5 my-4" th:if="${chosenGroup != null and chosenGroup.id == group.id}" th:href="@{'/?groupId=' + ${group.id}}" th:text="${group.name}"></a>
+        </div>
+    </div>
+    <div sec:authorize="hasRole('ROLE_ADMIN')" class="col-3 d-flex justify-content-center align-items-start">
+        <a class="btn btn-success btn-lg px-5 my-4" href="/group/add">+</a>
+    </div>
+</div>
+
+<div class="row justify-content-end" sec:authorize="hasRole('ROLE_MENTOR')">
+    <div class="col-auto">
+        <div th:if="${chosenTimeTable != null}">
+            <form action="/lesson/start" method="post">
+                <input type="hidden" name="timeTableId" th:value="${chosenTimeTable.id}">
+                <input type="hidden" name="groupId" th:value="${chosenGroup.id}">
+                <button type="submit" class="btn btn-info my-4 mx-2">Next Lesson</button>
+            </form>
+
+<!--            <form action="/lesson/end" method="post">-->
+<!--                <input type="hidden" name="timeTableId" th:value="${chosenTimeTable.id}">-->
+<!--                <input type="hidden" name="groupId" th:value="${chosenGroup.id}">-->
+<!--                <button type="submit" class="btn btn-danger my-4 mx-2">End Lesson</button>-->
+<!--            </form>-->
+        </div>
+    </div>
+</div>
+
+<div th:if="${chosenGroup != null}">
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <td>
+                <div class="row align-items-center">
+                    <form action="/" class="d-flex" style="width: 100%;">
+                        <input type="hidden" name="groupId" th:value="${chosenGroup.id}">
+                        <label for="timetableSelect" class="col-form-label me-2">Timetable:</label>
+                        <select id="timetableSelect" name="timetableId" class="form-select me-2">
+                            <th:block th:each="timetable : ${timeTables}">
+                                <option th:if="${chosenTimeTable!=null and chosenTimeTable.getId()==timetable.getId()}" th:value="${timetable.id}" th:text="${timetable.name}" selected>Timetable Option</option>
+                                <option th:unless="${chosenTimeTable!=null and chosenTimeTable.getId()==timetable.getId()}" th:value="${timetable.id}" th:text="${timetable.name}">Timetable Option</option>
+
+                            </th:block>
+                        </select>
+                        <button type="submit" class="btn btn-primary">OK</button>
+                    </form>
+                </div>
+                <form sec:authorize="hasRole('ROLE_ADMIN')" action="/time-table/add">
+                    <label for="addTimetable">Time Table</label>
+                    <input type="hidden" name="chosenGroupId" th:value="${chosenGroup.id}">
+                    <button  id="addTimetable" class="btn btn-outline-success">+</button><br>
+
+                </form>
+            </td>
+            <th:block th:if="${chosenTimeTable == null}">
+                <td th:each="i: ${#numbers.sequence(1, 12)}" th:text="${i}" class="center-text">1</td>
+            </th:block>
+            <th:block th:if="${chosenTimeTable != null}">
+                <td th:each="lesson : ${chosenTimeTable.lessons}" th:text="${lesson.lessonOrder + ' ' + lesson.lessonTime}" class="center-text">1</td>
+            </th:block>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student: ${students}">
+            <td class="center-text" th:text="${student.getFullName()}">Student Name</td>
+            <td sec:authorize="hasRole('ROLE_MENTOR')" class="center-text" th:each="attendance : ${student.getStudTimeTables().get(0).sortedAttendances()}">
+                <form action="/change">
+                    <input type="hidden" name="groupId" th:value="${chosenGroup.id}">
+                    <input type="hidden" name="timetableId" th:value="${chosenTimeTable.id}">
+                    <input type="hidden" name="id" th:value="${attendance.id}">
+                    <div th:if="${attendance.lesson.lessonOrder == currentLessonOrder and attendance.lesson.lessonStatus == T(org.example.studycenterspring.entity.enums.CSEStatus).STARTED}">
+                        <button th:if="${attendance.hasInLesson}" type="submit" class="btn btn-success" th:text="${attendance.hasInLesson}"></button>
+                        <button th:unless="${attendance.hasInLesson}" type="submit" class="btn btn-danger" th:text="${attendance.hasInLesson}"></button>
+                    </div>
+                    <div th:unless="${attendance.lesson.lessonOrder == currentLessonOrder and attendance.lesson.lessonStatus == T(org.example.studycenterspring.entity.enums.CSEStatus).STARTED}">
+                        <button th:if="${attendance.hasInLesson}" type="submit" class="btn btn-success" th:text="${attendance.hasInLesson}" disabled></button>
+                        <button th:unless="${attendance.hasInLesson}" type="submit" class="btn btn-danger" th:text="${attendance.hasInLesson}" disabled></button>
+                    </div>
+                </form>
+            </td>
+        </tr>
+        <th:block th:if="${chosenTimeTable}">
+            <td  sec:authorize="hasRole('ROLE_ADMIN')" th:unless="${chosenTimeTable.isStarted}">
+                <label for="addStudent">Student</label>
+                <a   href="/student/add" id="addStudent" class="btn btn-outline-success"><h3>+</h3></a>
+            </td>
+        </th:block>
+
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add TimeTable</title>
+    <link rel="stylesheet" href="/css/bootstrap.css">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Add TimeTable</h3>
+                </div>
+                <div class="card-body">
+                    <form action="/time-table/add" method="post">
+                        <div class="form-group">
+                            <label for="groupName">TimeTable Name</label>
+                            <input type="text" class="form-control" name="name" id="groupName" placeholder="Enter TimeTable name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price</label>
+                            <input type="number" class="form-control" name="price" id="price" placeholder="Enter Price" th:value="${pastTimeTable.price}"  required>
+                        </div>
+                        <div class="form-group">
+                            <label for="days">Days</label><br>
+                            <div class="form-check form-check-inline">
+                                <th:block th:if="${weekdays.contains(1)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="mondayCheck" value="1" checked>
+                                    <label class="form-check-label" for="mondayCheck">Monday</label>
+                                </th:block>
+                                <th:block th:unless="${weekdays.contains(1)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="monday" value="1">
+                                    <label class="form-check-label" for="monday">Monday</label>
+                                </th:block>
+
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <th:block th:if="${weekdays.contains(2)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="tuesdayCheck" value="2" checked>
+                                    <label class="form-check-label" for="tuesdayCheck">Tuesday</label>
+                                </th:block>
+                                <th:block th:unless="${weekdays.contains(2)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="tuesday" value="2">
+                                    <label class="form-check-label" for="tuesday">Tuesday</label>
+                                </th:block>
+
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <th:block th:if="${weekdays.contains(3)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="wednesdayCheck" value="3" checked>
+                                    <label class="form-check-label" for="wednesdayCheck">Wednesday</label>
+                                </th:block>
+                                <th:block th:unless="${weekdays.contains(3)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="wednesday" value="3">
+                                    <label class="form-check-label" for="wednesday">Wednesday</label>
+                                </th:block>
+
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <th:block th:if="${weekdays.contains(4)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="thursdayCheck" value="4" checked>
+                                    <label class="form-check-label" for="thursdayCheck">Thursday</label>
+                                </th:block>
+                                <th:block th:unless="${weekdays.contains(4)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="thursday" value="4">
+                                    <label class="form-check-label" for="thursday">Thursday</label>
+                                </th:block>
+
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <th:block th:if="${weekdays.contains(5)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="fridayCheck" value="5" checked>
+                                    <label class="form-check-label" for="fridayCheck">Friday</label>
+                                </th:block>
+                                <th:block th:unless="${weekdays.contains(5)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="friday" value="5">
+                                    <label class="form-check-label" for="friday">Friday</label>
+                                </th:block>
+
+
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <th:block th:if="${weekdays.contains(6)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="saturdayCheck" value="6" checked>
+                                    <label class="form-check-label" for="saturdayCheck">Saturday</label>
+                                </th:block>
+                                <th:block th:unless="${weekdays.contains(6)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="saturday" value="6">
+                                    <label class="form-check-label" for="saturday">Saturday</label>
+                                </th:block>
+
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <th:block th:if="${weekdays.contains(7)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="sundayCheck" value="7" ch>
+                                    <label class="form-check-label" for="sundayCheck">Sunday</label>
+                                </th:block>
+                                <th:block th:unless="${weekdays.contains(7)}">
+                                    <input class="form-check-input" type="checkbox" name="days" id="sunday" value="7">
+                                    <label class="form-check-label" for="sunday">Sunday</label>
+                                </th:block>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4>All Students</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-group" id="allStudents">
+                                                <li class="list-group-item" th:each="student : ${students}" th:text="${student.getFullName()}" th:data-id="${student.getId()}" th:onclick="selectStudent(this)"></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4>Selected Students</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-group" id="selectedStudentsList"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button  type="button" class="btn btn-primary mt-3" onclick="moveStudents()">>></button>
+
+                        </div>
+                        <input type="hidden" name="studentIds" id="studentIds">
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function selectStudent(element) {
+        const studentId = element.getAttribute('data-id');
+        const studentName = element.textContent;
+
+        const selectedStudentsList = document.getElementById('selectedStudentsList');
+
+        // Check if the student is already selected
+        if (!document.getElementById('selected-' + studentId)) {
+            // Create a new list item for the selected student
+            const selectedStudentItem = document.createElement('li');
+            selectedStudentItem.className = 'list-group-item';
+            selectedStudentItem.id = 'selected-' + studentId;
+            selectedStudentItem.setAttribute('data-id', studentId);
+            selectedStudentItem.textContent = studentName;
+            selectedStudentItem.setAttribute('onclick', 'removeStudent(this)');
+            selectedStudentsList.appendChild(selectedStudentItem);
+
+            updateStudentIds(); // Update the hidden input field with the selected student IDs
+        }
+    }
+
+    function removeStudent(element) {
+        element.parentElement.removeChild(element);
+        updateStudentIds(); // Update the hidden input field after removing a student
+    }
+
+    function updateStudentIds() {
+        const selectedStudentsList = document.getElementById('selectedStudentsList');
+        const studentIdsInput = document.getElementById('studentIds');
+
+        const selectedIds = Array.from(selectedStudentsList.children).map(item => item.getAttribute('data-id'));
+        studentIdsInput.value = selectedIds.join(',');
+    }
+
+    function moveStudents() {
+        const allStudentsList = document.getElementById('allStudents');
+        const selectedStudentsList = document.getElementById('selectedStudentsList');
+
+        // Move all list items from "All Students" to "Selected Students"
+        Array.from(allStudentsList.children).forEach(studentItem => {
+            const studentId = studentItem.getAttribute('data-id');
+            const studentName = studentItem.textContent;
+
+            // Check if the student is not already in the "Selected Students" list
+            if (!document.getElementById('selected-' + studentId)) {
+                const selectedStudentItem = document.createElement('li');
+                selectedStudentItem.className = 'list-group-item';
+                selectedStudentItem.id = 'selected-' + studentId;
+                selectedStudentItem.setAttribute('data-id', studentId);
+                selectedStudentItem.textContent = studentName;
+                selectedStudentItem.setAttribute('onclick', 'removeStudent(this)');
+                selectedStudentsList.appendChild(selectedStudentItem);
+            }
+        });
+
+        // Clear "All Students" list
+        allStudentsList.innerHTML = '';
+    }
+
+</script>
+</body>
+</html>
